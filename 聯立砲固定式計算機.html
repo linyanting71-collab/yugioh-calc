@@ -1,0 +1,129 @@
+<!doctype html>
+<html>
+<head>
+<title>聯立砲固定式計算機</title>
+<style>
+    /* 1. 設定全網頁背景與文字顏色 */
+    body {
+        background-color: #121212; /* 深黑色背景 */
+        color: #ffffff;           /* 純白色文字 */
+        font-family: "Microsoft JhengHei", sans-serif; /* 微軟正黑體 */
+        padding: 20px;
+    }
+
+    /* 2. 讓輸入框也符合深色主題 */
+    input[type="text"] {
+        background-color: #333;   /* 深灰色背景 */
+        border: 1px solid #555;   /* 暗灰色邊框 */
+        color: white;             /* 輸入內容為白色 */
+        padding: 5px;
+        border-radius: 4px;
+        margin-bottom: 10px;
+    }
+
+    /* 3. 按鈕美化 */
+    input[type="button"] {
+        background-color: #444;
+        color: white;
+        border: 1px solid #666;
+        padding: 5px 15px;
+        cursor: pointer;
+        border-radius: 4px;
+    }
+    input[type="button"]:hover {
+        background-color: #555; /* 滑鼠移上去變亮一點 */
+    }
+
+    /* 4. 結果網格容器 */
+    .grid-container {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-gap: 15px;
+        margin: 20px auto;
+        max-width: 600px;
+    }
+
+    /* 5. 結果格子的樣式 (深色版) */
+    .grid-item {
+        border: 1px solid #444;   /* 邊框不要太亮 */
+        padding: 15px;
+        background-color: #1e1e1e; /* 比背景稍微亮一點點的黑 */
+        color: #3fe0e6;           /* 結果數字用亮色(如青色)會更明顯，也可以改回 white */
+        border-radius: 8px;
+        text-align: center;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5); /* 增加陰影感 */
+    }
+</style>
+</head>
+<body>
+
+<center>
+
+<p id="card_num">輸入雙方場上、手牌合計數值</p>
+
+<form name=yu>
+<input type=text id="t1"name=t1 size="3" autocomplete="off" value=""><br>
+<p id="star_rank">輸入場上各怪獸星級、階級數值(以空格分開)</p>
+<input type=text id="t2" name=t2 size="10" autocomplete="off" value=""><br><br>
+<input type=button onclick="start()" value="確認">
+</form>
+
+<div id="result" class="grid-container"></div>
+
+</center>
+
+<script>
+	function start(){
+		let fus=[1,2,3,4,5,6];
+		let xyz=[2,3,4,5];
+		var cards=Number(document.yu.t1.value);;
+		var level_rank=document.yu.t2.value;
+		level_rank=level_rank.trim().split(/\s+/).map(Number);	
+		var found=0;		
+		var result = document.getElementById("result");result.innerHTML = "";
+
+		for(var i=0;i<fus.length;i++){
+			for(var j=0;j<xyz.length;j++){
+				if(fus[i]+2*xyz[j]==cards){
+					if(level_rank.includes(fus[i] + xyz[j])){
+						found++;
+						let item = document.createElement("div");
+                        item.className = "grid-item";
+                        item.innerHTML = `點${fus[i]+xyz[j]}星/階怪獸<br>融合: ${fus[i]}星<br>超量: ${xyz[j]}階`;
+                        
+                        result.appendChild(item);
+					}
+				}
+			}
+		}
+		if (found === 0) {
+            result.innerHTML = "<div style='grid-column: 1 / span 3; text-align: center; color: red; width: 100%;'>無可使用的怪獸</div>";
+        }
+	}
+
+    // 監聽整個網頁的按鍵事件
+    document.addEventListener('keydown', function(event) {
+        const activeElement = document.activeElement; // 目前游標所在的元素
+        const t1 = document.getElementById('t1');
+        const t2 = document.getElementById('t2');
+
+        // 當按下 Enter 時執行計算
+        if (event.key === "Enter") {
+            event.preventDefault(); // 預防表單預設提交行為
+            start();
+        }
+
+        // 當游標在 t1 時，按向下鍵跳到 t2
+        if (event.key === "ArrowDown" && activeElement === t1) {
+            t2.focus();
+        }
+
+        // 當游標在 t2 時，按向上鍵跳到 t1
+        if (event.key === "ArrowUp" && activeElement === t2) {
+            t1.focus();
+        }
+    });	
+</script>
+
+</body>
+</html>
